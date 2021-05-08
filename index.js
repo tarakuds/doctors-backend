@@ -1,16 +1,18 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const app = express()
-require('dotenv').config()
-const PORT = process.env.PORT || 5000
+const express = require("express");
+const mongoose = require("mongoose");
 
-const userRouter = require('./route/user.route')
+require("dotenv").config();
+const userRouter = require("./route/user.route");
+const app = express();
+const PORT = process.env.PORT || 5000;
+app.use(express.json());
+app.use("/", userRouter);
 
-app.use('/go', userRouter)
-
-mongoose.connect('mongodb+srv://doctorList:75W3iqq5$xsmEms@cluster0.gvp2n.mongodb.net/doctorList?retryWrites=true&w=majority', {useNewUrlParser:true, useUnifiedTopology:true},
-app.listen(PORT, ()=>{
+mongoose.connect(
+  process.env.DB_URL,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  app.listen(PORT, () => {
     console.log("Hello");
-}),
-console.log('db connected'))
-
+  }),
+  console.log("db connected")
+);

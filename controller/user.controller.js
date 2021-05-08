@@ -1,42 +1,60 @@
-const bycrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const User = require("../model/User.schema");
 const { userLogin, userRegister } = require("../validation/user.validation");
 
 const register = async (req, res, next) => {
   try {
     const data = req.body;
-
-    const value = await userRegister.validate(data);
+    const { error } = await userRegister(data);
+    if (error) {
+      console.log(error);
+      res.status(401).json({
+        status: "failed",
+        message: "validation error",
+        data: error,
+      });
+    }
     let user = await User.findOne({ email: data.email });
+    if (user) {
+      console.log("user already exists");
+    }
     data.password = await bcrypt.hash(data.password, 8);
-    user = await User.create(data);
+    const newData = new User(data);
+    const userDetails = await User.create(newData);
     res.status(200).json({
       status: "success",
       message: "successfully registered",
-      data: user,
+      data: userDetails,
     });
   } catch (error) {
-      res.status(400).json('something happened')
+    next(error);
+    // res.status(400).json("something happened");
   }
 };
 
 const login = async (req, res, next) => {
   try {
     const data = req.body;
-
-    const value = await userLogin.validate(data);
-    const user = await User.findOne({ email: data.email.toLowercase() });
+    const { error } = await userLogin(data);
+    if (error) {
+      res.status(401).json({
+        status: "failed",
+        message: "validation error",
+        data: error,
+      });
+    }
+    const userEmail = await User.findOne({ email: data.email});
     const isPasswordCorrect = await bcrypt.compare(
       data.password,
-      user.password
+      userEmail.password
     );
     res.status(200).json({
       status: "success",
-      message: "successful",
-      data: user ,
+      message: "successful login",
+      data: userEmail,
     });
   } catch (error) {
-    next(res.status(400).json('an error occured'));
+    next(error);
   }
 };
 const updateUser = async (req, res, next) => {

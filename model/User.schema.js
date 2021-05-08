@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     firstname:{
         type:String, 
-        required:[true, 'Firstname is required']},
+        required:[true, 'Firstname is required'],},
     lastname:{
         type:String, 
         required:[true, 'lastname is required']},
     phonenumber:{
-        type:Number, 
+        type:String, 
         required:[true, 'Phone number is required']},
     email:{
         type:String, 
@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum: ['admin', 'doctor', 'patient'],
         required: [true, 'select your designation'],
-        
     },
     password:{
         type:String,
